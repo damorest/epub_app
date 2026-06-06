@@ -18,14 +18,14 @@ class ConverterScreen extends StatelessWidget {
       appBar: AppBar(title: const Text(AppTexts.navConverter)),
       body: BlocBuilder<ConverterCubit, ConverterState>(
         builder: (context, state) => switch (state) {
-          ConverterIdle()        => const _FormView(),
-          ConverterLoading()     => const _FormView(loading: true),
-          ConverterRunning()     => _ProgressView(state: state),
-          ConverterDone()        => _DoneView(state: state),
-          ConverterPublishing()  => _DoneView(state: state, publishing: true),
-          ConverterPublished()   => _PublishedView(state: state),
-          ConverterError()       => _ErrorView(state: state),
-          ConverterCancelled()   => _CancelledView(),
+          ConverterIdle()       => const _FormView(),
+          ConverterLoading()    => const _FormView(loading: true),
+          ConverterRunning()    => _ProgressView(state: state),
+          ConverterDone()       => _DoneView(state: state),
+          ConverterPublishing() => _DoneView(state: state, publishing: true),
+          ConverterPublished()  => _PublishedView(state: state),
+          ConverterError()      => _ErrorView(state: state),
+          ConverterCancelled()  => _CancelledView(),
         },
       ),
     );
@@ -35,6 +35,8 @@ class ConverterScreen extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Form
 // ---------------------------------------------------------------------------
+
+enum _ParseMode { pattern, followNext }
 
 class _FormView extends StatefulWidget {
   const _FormView({this.loading = false});
@@ -49,7 +51,8 @@ class _FormViewState extends State<_FormView> {
   final _titleCtrl = TextEditingController();
   final _startCtrl = TextEditingController(text: '1');
   final _endCtrl   = TextEditingController();
-  bool _followNext = false;
+  final _limitCtrl = TextEditingController();
+  _ParseMode _mode = _ParseMode.pattern;
 
   @override
   void dispose() {
@@ -57,6 +60,7 @@ class _FormViewState extends State<_FormView> {
     _titleCtrl.dispose();
     _startCtrl.dispose();
     _endCtrl.dispose();
+    _limitCtrl.dispose();
     super.dispose();
   }
 
@@ -69,12 +73,17 @@ class _FormViewState extends State<_FormView> {
       );
       return;
     }
+    final followNext = _mode == _ParseMode.followNext;
+    final start = int.tryParse(_startCtrl.text) ?? 1;
+    final end = followNext
+        ? (int.tryParse(_limitCtrl.text) ?? 0) + start - 1
+        : (int.tryParse(_endCtrl.text) ?? 9999);
     context.read<ConverterCubit>().startParsing(
       url: url,
       title: title,
-      start: int.tryParse(_startCtrl.text) ?? 1,
-      end: int.tryParse(_endCtrl.text) ?? 9999,
-      followNext: _followNext,
+      start: followNext ? 1 : start,
+      end: (followNext && _limitCtrl.text.trim().isEmpty) ? 9999 : end,
+      followNext: followNext,
     );
   }
 
@@ -85,22 +94,21 @@ class _FormViewState extends State<_FormView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppTextField(
-            controller: _urlCtrl,
-            label: AppTexts.urlLabel,
-            hint: AppTexts.urlHint,
-            helperText: AppTexts.urlHelper,
-            keyboardType: TextInputType.url,
+          _ModeSelector(
+            selected: _mode,
+            onChanged: (m) => setState(() => _mode = m),
           ),
-          const SizedBox(height: 16),
-          AppTextField(
-            controller: _titleCtrl,
-            label: AppTexts.titleLabel,
-            hint: AppTexts.titleHint,
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
+          const SizedBox(height: 20),
+          if (_mode == _ParseMode.pattern) ...[
+            AppTextField(
+              controller: _urlCtrl,
+              label: AppTexts.urlPatternLabel,
+              hint: 'https://site.com/chapter-{n}',
+              helperText: AppTexts.urlPatternHelper,
+              keyboardType: TextInputType.url,
+            ),
+            const SizedBox(height: 16),
+            Row(children: [
               Expanded(
                 child: AppTextField(
                   controller: _startCtrl,
@@ -114,18 +122,36 @@ class _FormViewState extends State<_FormView> {
                 child: AppTextField(
                   controller: _endCtrl,
                   label: AppTexts.toChapter,
-                  hint: AppTexts.toChapterHint,
+                  hint: AppTexts.toChapterAutoHint,
+                  helperText: AppTexts.toChapterAutoHelper,
                   keyboardType: TextInputType.number,
                 ),
               ),
-            ],
+            ]),
+          ] else ...[
+            AppTextField(
+              controller: _urlCtrl,
+              label: AppTexts.urlFirstChapterLabel,
+              hint: 'https://site.com/chapter-1',
+              helperText: AppTexts.urlFirstChapterHelper,
+              keyboardType: TextInputType.url,
+            ),
+            const SizedBox(height: 16),
+            AppTextField(
+              controller: _limitCtrl,
+              label: AppTexts.limitLabel,
+              hint: AppTexts.limitHint,
+              helperText: AppTexts.limitHelper,
+              keyboardType: TextInputType.number,
+            ),
+          ],
+          const SizedBox(height: 16),
+          AppTextField(
+            controller: _titleCtrl,
+            label: AppTexts.titleLabel,
+            hint: AppTexts.titleHint,
           ),
-          const SizedBox(height: 12),
-          _FollowNextToggle(
-            value: _followNext,
-            onChanged: (v) => setState(() => _followNext = v),
-          ),
-          const SizedBox(height: 36),
+          const SizedBox(height: 32),
           AppButton(
             label: AppTexts.processBtn,
             loading: widget.loading,
@@ -137,31 +163,52 @@ class _FormViewState extends State<_FormView> {
   }
 }
 
-class _FollowNextToggle extends StatelessWidget {
-  const _FollowNextToggle({required this.value, required this.onChanged});
-  final bool value;
-  final ValueChanged<bool> onChanged;
+class _ModeSelector extends StatelessWidget {
+  const _ModeSelector({required this.selected, required this.onChanged});
+  final _ParseMode selected;
+  final ValueChanged<_ParseMode> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: SwitchListTile(
-        title: const Text(
-          AppTexts.followNext,
-          style: TextStyle(color: Colors.white, fontSize: 14),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          AppTexts.modeLabel,
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
         ),
-        subtitle: const Text(
-          AppTexts.followNextHint,
-          style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+        const SizedBox(height: 8),
+        SegmentedButton<_ParseMode>(
+          style: SegmentedButton.styleFrom(
+            backgroundColor: AppColors.surface,
+            selectedBackgroundColor: AppColors.primary.withValues(alpha: 0.15),
+            selectedForegroundColor: AppColors.primary,
+            foregroundColor: AppColors.textMuted,
+            side: const BorderSide(color: AppColors.border),
+          ),
+          segments: const [
+            ButtonSegment(
+              value: _ParseMode.pattern,
+              label: Text(AppTexts.modePattern),
+              icon: Icon(Icons.tag, size: 16),
+            ),
+            ButtonSegment(
+              value: _ParseMode.followNext,
+              label: Text(AppTexts.modeFollowNext),
+              icon: Icon(Icons.arrow_forward, size: 16),
+            ),
+          ],
+          selected: {selected},
+          onSelectionChanged: (s) => onChanged(s.first),
         ),
-        value: value,
-        onChanged: onChanged,
-      ),
+        const SizedBox(height: 6),
+        Text(
+          selected == _ParseMode.pattern
+              ? AppTexts.modePatternDesc
+              : AppTexts.modeFollowNextDesc,
+          style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+        ),
+      ],
     );
   }
 }
@@ -216,31 +263,6 @@ class _ProgressView extends StatelessWidget {
             AppTexts.cancelBtn,
             style: TextStyle(color: AppColors.error),
           ),
-        ),
-      ],
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Cancelled
-// ---------------------------------------------------------------------------
-
-class _CancelledView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return _CenteredColumn(
-      children: [
-        const Icon(Icons.cancel_outlined, color: AppColors.textMuted, size: 72),
-        const SizedBox(height: 20),
-        const Text(
-          AppTexts.cancelledTitle,
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 18),
-        ),
-        const SizedBox(height: 40),
-        AppButton(
-          label: AppTexts.backToConverter,
-          onPressed: () => context.read<ConverterCubit>().reset(),
         ),
       ],
     );
@@ -366,6 +388,31 @@ class _ErrorView extends StatelessWidget {
         const SizedBox(height: 40),
         AppButton(
           label: AppTexts.tryAgain,
+          onPressed: () => context.read<ConverterCubit>().reset(),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Cancelled
+// ---------------------------------------------------------------------------
+
+class _CancelledView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _CenteredColumn(
+      children: [
+        const Icon(Icons.cancel_outlined, color: AppColors.textMuted, size: 72),
+        const SizedBox(height: 20),
+        const Text(
+          AppTexts.cancelledTitle,
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 18),
+        ),
+        const SizedBox(height: 40),
+        AppButton(
+          label: AppTexts.backToConverter,
           onPressed: () => context.read<ConverterCubit>().reset(),
         ),
       ],
