@@ -44,4 +44,8 @@ abstract final class AppTexts {
   // Converter — error
   static const somethingWrong = 'Щось пішло не так';
   static const tryAgain       = 'Спробувати знову';
+
+  // Converter — cancel
+  static const cancelBtn      = 'Скасувати';
+  static const cancelledTitle = 'Операцію скасовано';
 }

@@ -41,6 +41,11 @@ class ApiService {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<void> cancelJob(String jobId) async {
+    final response = await http.post(Uri.parse('$_base/cancel/$jobId'));
+    _checkStatus(response);
+  }
+
   Future<void> ping() async {
     await http.get(Uri.parse('$_base/ping')).timeout(const Duration(seconds: 5));
   }

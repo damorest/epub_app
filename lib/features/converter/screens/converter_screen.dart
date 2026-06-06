@@ -18,13 +18,14 @@ class ConverterScreen extends StatelessWidget {
       appBar: AppBar(title: const Text(AppTexts.navConverter)),
       body: BlocBuilder<ConverterCubit, ConverterState>(
         builder: (context, state) => switch (state) {
-          ConverterIdle()      => const _FormView(),
-          ConverterLoading()   => const _FormView(loading: true),
-          ConverterRunning()   => _ProgressView(state: state),
-          ConverterDone()      => _DoneView(state: state),
-          ConverterPublishing()=> _DoneView(state: state, publishing: true),
-          ConverterPublished() => _PublishedView(state: state),
-          ConverterError()     => _ErrorView(state: state),
+          ConverterIdle()        => const _FormView(),
+          ConverterLoading()     => const _FormView(loading: true),
+          ConverterRunning()     => _ProgressView(state: state),
+          ConverterDone()        => _DoneView(state: state),
+          ConverterPublishing()  => _DoneView(state: state, publishing: true),
+          ConverterPublished()   => _PublishedView(state: state),
+          ConverterError()       => _ErrorView(state: state),
+          ConverterCancelled()   => _CancelledView(),
         },
       ),
     );
@@ -207,6 +208,39 @@ class _ProgressView extends StatelessWidget {
           AppTexts.dontClose,
           style: TextStyle(color: AppColors.textMuted, fontSize: 12),
           textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 24),
+        TextButton(
+          onPressed: () => context.read<ConverterCubit>().cancel(),
+          child: const Text(
+            AppTexts.cancelBtn,
+            style: TextStyle(color: AppColors.error),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Cancelled
+// ---------------------------------------------------------------------------
+
+class _CancelledView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _CenteredColumn(
+      children: [
+        const Icon(Icons.cancel_outlined, color: AppColors.textMuted, size: 72),
+        const SizedBox(height: 20),
+        const Text(
+          AppTexts.cancelledTitle,
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 18),
+        ),
+        const SizedBox(height: 40),
+        AppButton(
+          label: AppTexts.backToConverter,
+          onPressed: () => context.read<ConverterCubit>().reset(),
         ),
       ],
     );

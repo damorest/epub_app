@@ -51,3 +51,9 @@ class ConverterError extends ConverterState {
   @override
   List<Object?> get props => [message];
 }
+
+class ConverterCancelled extends ConverterState {
+  const ConverterCancelled();
+  @override
+  List<Object?> get props => [];
+}

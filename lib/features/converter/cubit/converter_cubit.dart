@@ -48,6 +48,16 @@ class ConverterCubit extends Cubit<ConverterState> {
     }
   }
 
+  Future<void> cancel() async {
+    if (_currentJobId == null) return;
+    _stopTimers();
+    try {
+      await _api.cancelJob(_currentJobId!);
+    } catch (_) {}
+    _currentJobId = null;
+    emit(const ConverterCancelled());
+  }
+
   void reset() {
     _stopTimers();
     _currentJobId = null;

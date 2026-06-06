@@ -33,5 +33,7 @@ class ApiRepository {
     return data['url'] as String;
   }
 
+  Future<void> cancelJob(String jobId) => _service.cancelJob(jobId);
+
   Future<void> ping() => _service.ping();
 }
