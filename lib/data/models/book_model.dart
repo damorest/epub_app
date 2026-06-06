@@ -5,28 +5,31 @@ class EpubFileModel extends Equatable {
   final String name;
   final String label;
   final int sizeKb;
-  final String slug;
+  final String _url;
 
   const EpubFileModel({
     required this.name,
     required this.label,
     required this.sizeKb,
-    required this.slug,
-  });
+    required String url,
+  }) : _url = url;
 
-  factory EpubFileModel.fromJson(Map<String, dynamic> json, String slug) =>
-      EpubFileModel(
-        name: json['name'] as String? ?? '',
-        label: json['label'] as String? ?? '',
-        sizeKb: json['size_kb'] as int? ?? 0,
-        slug: slug,
-      );
+  factory EpubFileModel.fromJson(Map<String, dynamic> json, String slug) {
+    final name = json['name'] as String? ?? '';
+    final url = json['url'] as String? ??
+        '${AppConstants.libraryBaseUrl}/books/$slug/$name';
+    return EpubFileModel(
+      name: name,
+      label: json['label'] as String? ?? '',
+      sizeKb: json['size_kb'] as int? ?? 0,
+      url: url,
+    );
+  }
 
-  String get downloadUrl =>
-      '${AppConstants.libraryBaseUrl}/books/$slug/$name';
+  String get downloadUrl => _url;
 
   @override
-  List<Object?> get props => [name, slug];
+  List<Object?> get props => [name, _url];
 }
 
 
