@@ -344,7 +344,8 @@ class _PublishedView extends StatelessWidget {
             label: AppTexts.openLibrary,
             icon: Icons.open_in_browser,
             onPressed: () => launchUrl(
-              Uri.parse(state.job.siteUrl!),
+              // Add timestamp to bypass browser cache
+              Uri.parse('${state.job.siteUrl!}?v=${DateTime.now().millisecondsSinceEpoch}'),
               mode: LaunchMode.externalApplication,
             ),
           ),
