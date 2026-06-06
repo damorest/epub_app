@@ -41,6 +41,11 @@ class ApiService {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<void> deleteBook(String slug) async {
+    final response = await http.delete(Uri.parse('$_base/books/$slug'));
+    _checkStatus(response);
+  }
+
   Future<void> cancelJob(String jobId) async {
     final response = await http.post(Uri.parse('$_base/cancel/$jobId'));
     _checkStatus(response);

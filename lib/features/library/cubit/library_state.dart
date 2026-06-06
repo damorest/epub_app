@@ -30,3 +30,11 @@ class LibraryError extends LibraryState {
   @override
   List<Object?> get props => [message];
 }
+
+class LibraryDeleting extends LibraryState {
+  final List<BookModel> books;
+  final String deletingSlug;
+  const LibraryDeleting(this.books, this.deletingSlug);
+  @override
+  List<Object?> get props => [books, deletingSlug];
+}

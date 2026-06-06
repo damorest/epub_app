@@ -60,4 +60,10 @@ abstract final class AppTexts {
   static const tryAgain        = 'Спробувати знову';
   static const cancelBtn       = 'Скасувати';
   static const cancelledTitle  = 'Операцію скасовано';
+
+  // Library — delete
+  static const deleteTitle      = 'Видалити книгу';
+  static const deleteConfirm    = 'Видалити';
+  static const deleteConfirmBtn = 'Видалити';
+  static const cancel           = 'Скасувати';
 }

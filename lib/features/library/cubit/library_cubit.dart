@@ -16,4 +16,18 @@ class LibraryCubit extends Cubit<LibraryState> {
       emit(LibraryError(e.toString()));
     }
   }
+
+  Future<void> deleteBook(String slug) async {
+    final current = state;
+    if (current is! LibraryLoaded) return;
+    emit(LibraryDeleting(current.books, slug));
+    try {
+      await _repo.deleteBook(slug);
+      final updated = current.books.where((b) => b.slug != slug).toList();
+      emit(LibraryLoaded(updated));
+    } catch (e) {
+      emit(LibraryLoaded(current.books));
+      rethrow;
+    }
+  }
 }

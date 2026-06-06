@@ -43,7 +43,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
             ),
           LibraryLoaded(books: final books) => books.isEmpty
               ? _EmptyView()
-              : _BookList(books: books),
+              : _BookList(books: books, deletingSlug: null),
+          LibraryDeleting(books: final books, deletingSlug: final slug) =>
+              _BookList(books: books, deletingSlug: slug),
         },
       ),
     );
@@ -100,20 +102,57 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _BookList extends StatelessWidget {
-  const _BookList({required this.books});
+  const _BookList({required this.books, required this.deletingSlug});
   final List<BookModel> books;
+  final String? deletingSlug;
 
   @override
   Widget build(BuildContext context) => ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: books.length,
-        itemBuilder: (_, i) => _BookCard(book: books[i]),
+        itemBuilder: (_, i) => _BookCard(
+          book: books[i],
+          isDeleting: books[i].slug == deletingSlug,
+        ),
       );
 }
 
 class _BookCard extends StatelessWidget {
-  const _BookCard({required this.book});
+  const _BookCard({required this.book, required this.isDeleting});
   final BookModel book;
+  final bool isDeleting;
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text(
+          AppTexts.deleteTitle,
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          '${AppTexts.deleteConfirm} «${book.title}»?',
+          style: const TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text(AppTexts.cancel,
+                style: TextStyle(color: AppColors.textMuted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(AppTexts.deleteConfirmBtn,
+                style: TextStyle(color: AppColors.error)),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && context.mounted) {
+      context.read<LibraryCubit>().deleteBook(book.slug);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,13 +167,35 @@ class _BookCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            book.title,
-            style: const TextStyle(
-              color: AppColors.primary,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  book.title,
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              if (isDeleting)
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: AppColors.error),
+                )
+              else
+                IconButton(
+                  icon: const Icon(Icons.delete_outline,
+                      color: AppColors.textMuted, size: 20),
+                  onPressed: () => _confirmDelete(context),
+                  tooltip: AppTexts.deleteTitle,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+            ],
           ),
           const SizedBox(height: 4),
           Text(
