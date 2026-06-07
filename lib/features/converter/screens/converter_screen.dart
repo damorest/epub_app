@@ -73,24 +73,28 @@ class _FormView extends StatefulWidget {
 }
 
 class _FormViewState extends State<_FormView> {
-  final _urlCtrl   = TextEditingController();
-  final _titleCtrl = TextEditingController();
+  final _urlCtrl        = TextEditingController();
+  final _titleCtrl      = TextEditingController();
   final _chapterNumCtrl = TextEditingController(text: '1');
-  final _endCtrl   = TextEditingController();
-  final _limitCtrl = TextEditingController();
+  final _fromCtrl       = TextEditingController(text: '1');
+  final _endCtrl        = TextEditingController();
+  final _limitCtrl      = TextEditingController();
   _ParseMode _mode = _ParseMode.followNext;
 
   @override
   void initState() {
     super.initState();
     _urlCtrl.addListener(() => setState(() {}));
-    _chapterNumCtrl.addListener(() => setState(() {}));
+    _chapterNumCtrl.addListener(() {
+      setState(() {});
+      _fromCtrl.text = _chapterNumCtrl.text;
+    });
   }
 
   @override
   void dispose() {
     _urlCtrl.dispose(); _titleCtrl.dispose(); _chapterNumCtrl.dispose();
-    _endCtrl.dispose(); _limitCtrl.dispose();
+    _fromCtrl.dispose(); _endCtrl.dispose(); _limitCtrl.dispose();
     super.dispose();
   }
 
@@ -125,7 +129,7 @@ class _FormViewState extends State<_FormView> {
       if (pattern.isEmpty || title.isEmpty) {
         _showError(context); return;
       }
-      final start = int.tryParse(_chapterNumCtrl.text) ?? 1;
+      final start = int.tryParse(_fromCtrl.text) ?? 1;
       final end   = int.tryParse(_endCtrl.text.trim()) ?? 9999;
       context.read<ConverterCubit>().startParsing(
         url: pattern, title: title,
@@ -219,7 +223,7 @@ class _FormViewState extends State<_FormView> {
                       Expanded(
                         child: _Field(
                           label: AppTexts.fromChapter,
-                          controller: _chapterNumCtrl,
+                          controller: _fromCtrl,
                           hint: '1',
                           keyboardType: TextInputType.number,
                         ),
