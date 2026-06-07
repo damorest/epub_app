@@ -1,35 +1,41 @@
 import 'package:flutter/material.dart';
-import 'screens/library_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'core/theme/app_theme.dart';
+import 'data/repositories/api_repository.dart';
+import 'data/repositories/library_repository.dart';
+import 'features/converter/cubit/converter_cubit.dart';
+import 'features/library/cubit/library_cubit.dart';
+import 'router/app_router.dart';
 
-void main() => runApp(const EpubApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+  runApp(const App());
+}
 
-class EpubApp extends StatelessWidget {
-  const EpubApp({super.key});
+class App extends StatelessWidget {
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Моя бібліотека',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFc8a96e),
-          brightness: Brightness.dark,
-          surface: const Color(0xFF16213e),
-        ),
-        scaffoldBackgroundColor: const Color(0xFF1a1a2e),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF16213e),
-          foregroundColor: Color(0xFFc8a96e),
-          elevation: 0,
-        ),
-        snackBarTheme: const SnackBarThemeData(
-          backgroundColor: Color(0xFF16213e),
-          contentTextStyle: TextStyle(color: Colors.white),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(create: (_) => ApiRepository()),
+        RepositoryProvider(create: (_) => LibraryRepository()),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (ctx) => ConverterCubit(ctx.read<ApiRepository>())),
+          BlocProvider(create: (ctx) => LibraryCubit(ctx.read<LibraryRepository>())),
+        ],
+        child: MaterialApp.router(
+          title: 'EPUB Бібліотека',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.dark,
+          routerConfig: appRouter,
         ),
       ),
-      home: const LibraryScreen(),
     );
   }
 }
