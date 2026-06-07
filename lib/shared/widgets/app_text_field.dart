@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_typography.dart';
 
-class AppTextField extends StatelessWidget {
+class AppTextField extends StatefulWidget {
   const AppTextField({
     super.key,
     required this.controller,
@@ -9,55 +10,75 @@ class AppTextField extends StatelessWidget {
     this.label,
     this.helperText,
     this.keyboardType = TextInputType.text,
+    this.prefixIcon,
   });
 
   final TextEditingController controller;
   final String hint;
   final String? label;
-  final String? helperText;
+  final Widget? helperText;
   final TextInputType keyboardType;
+  final IconData? prefixIcon;
+
+  @override
+  State<AppTextField> createState() => _AppTextFieldState();
+}
+
+class _AppTextFieldState extends State<AppTextField> {
+  bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (label != null) ...[
+        if (widget.label != null) ...[
           Text(
-            label!,
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            widget.label!,
+            style: AppTypography.label,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 9),
         ],
-        TextField(
-          controller: controller,
-          keyboardType: keyboardType,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: const TextStyle(color: AppColors.textMuted),
-            filled: true,
-            fillColor: AppColors.surface,
-            border: _border(),
-            enabledBorder: _border(),
-            focusedBorder: _border(color: AppColors.primary),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        Focus(
+          onFocusChange: (f) => setState(() => _focused = f),
+          child: TextField(
+            controller: widget.controller,
+            keyboardType: widget.keyboardType,
+            style: AppTypography.body,
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              hintStyle: AppTypography.body.copyWith(color: AppColors.text3),
+              prefixIcon: widget.prefixIcon != null
+                  ? Icon(widget.prefixIcon, color: AppColors.text3, size: 20)
+                  : null,
+              filled: true,
+              fillColor: _focused
+                  ? AppColors.inputFocusedBg
+                  : AppColors.surface,
+              border: _border(),
+              enabledBorder: _border(),
+              focusedBorder: _border(color: AppColors.goldLine),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 15,
+              ),
+            ),
           ),
         ),
-        if (helperText != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            helperText!,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
+        if (widget.helperText != null) ...[
+          const SizedBox(height: 8),
+          DefaultTextStyle(
+            style: AppTypography.hint,
+            child: widget.helperText!,
           ),
         ],
       ],
     );
   }
 
-  OutlineInputBorder _border({Color color = AppColors.border}) =>
+  OutlineInputBorder _border({Color color = AppColors.line}) =>
       OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: color),
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: color, width: 1.5),
       );
 }

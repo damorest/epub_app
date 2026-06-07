@@ -42,7 +42,9 @@ class ApiService {
   }
 
   Future<void> deleteBook(String slug) async {
-    final response = await http.delete(Uri.parse('$_base/books/$slug'));
+    final response = await http
+        .delete(Uri.parse('$_base/books/$slug'))
+        .timeout(const Duration(seconds: 60));
     _checkStatus(response);
   }
 

@@ -1,38 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../constants/app_colors.dart';
 
 abstract final class AppTheme {
-  static ThemeData get dark => ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          brightness: Brightness.dark,
-          surface: AppColors.surface,
+  static ThemeData get dark {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: AppColors.bg,
+      colorScheme: const ColorScheme.dark(
+        primary: AppColors.gold,
+        surface: AppColors.surface,
+        error: AppColors.danger,
+      ),
+      fontFamily: 'Manrope',
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        iconTheme: const IconThemeData(color: AppColors.gold),
+        titleTextStyle: TextStyle(fontFamily: 'Lora', 
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: AppColors.text,
         ),
-        scaffoldBackgroundColor: AppColors.background,
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.surface,
-          foregroundColor: AppColors.primary,
-          elevation: 0,
-          centerTitle: false,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: AppColors.surface2,
+        contentTextStyle: TextStyle(fontFamily: 'Manrope', color: AppColors.text),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        behavior: SnackBarBehavior.floating,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.line, width: 1.5),
         ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: AppColors.surface,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textMuted,
-          type: BottomNavigationBarType.fixed,
-          elevation: 0,
-        ),
-        switchTheme: SwitchThemeData(
-          thumbColor: WidgetStateProperty.resolveWith(
-            (s) => s.contains(WidgetState.selected)
-                ? AppColors.primary
-                : AppColors.textMuted,
-          ),
-        ),
-        snackBarTheme: const SnackBarThemeData(
-          backgroundColor: AppColors.surface,
-          contentTextStyle: TextStyle(color: AppColors.textPrimary),
-        ),
-      );
+      ),
+    );
+  }
 }
