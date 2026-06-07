@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_texts.dart';
+import '../../core/constants/app_typography.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key, required this.onDone});
@@ -182,21 +183,15 @@ class _SplashScreenState extends State<SplashScreen>
                                 AppColors.goldGradient.createShader(bounds),
                             child: Text(
                               AppTexts.splashWordmark,
-                              style: TextStyle(fontFamily: 'Lora',
-                                fontSize: 38,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.16 * 38,
-                                color: Colors.white,
-                              ),
+                              style: AppTypography.splashLogo,
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             AppTexts.splashSubtitle,
-                            style: TextStyle(fontFamily: 'Manrope',
+                            style: AppTypography.eyebrow.copyWith(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
-                              letterSpacing: 0.18 * 11,
                               color: AppColors.text3,
                             ),
                           ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_typography.dart';
 
 class ProceduralCover extends StatelessWidget {
   const ProceduralCover({
@@ -108,13 +110,12 @@ class ProceduralCover extends StatelessWidget {
                 shaderCallback: (bounds) => const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Color(0xFFEFD193), Color(0xFFB0894A)],
+                  colors: [AppColors.goldBright, AppColors.goldDeep],
                 ).createShader(bounds),
                 child: Text(
                   letter,
-                  style: TextStyle(fontFamily: 'Lora', 
+                  style: AppTypography.bookTitle.copyWith(
                     fontSize: fontSize,
-                    fontWeight: FontWeight.w600,
                     color: Colors.white,
                     height: 1,
                   ),

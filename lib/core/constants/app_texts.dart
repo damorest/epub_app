@@ -66,6 +66,15 @@ abstract final class AppTexts {
   static const processBtn = 'Опрацювати';
   static const fillFields = 'Вкажи URL та назву книги';
 
+  // Converter — waking stages (cycling messages while server cold-starts)
+  static const wakingStages = [
+    ('Будимо сервер…',        'Render засинає після 15 хв без активності — перша відповідь триває довше'),
+    ('Зачекай трохи…',        'Зазвичай займає 15–30 секунд'),
+    ('Він вже прокидається…', 'Безкоштовний план — потрібно трохи терпіння 😴'),
+    ('Майже готово…',         'Сервер стартує, ось-ось відповість'),
+    ('Ще мить…',              'Дякуємо за терпіння!'),
+  ];
+
   // Converter — progress
   static const starting          = 'Запускаємо…';
   static const loadingTitle      = 'Завантажуємо…';

@@ -124,11 +124,7 @@ class TextLinkButton extends StatelessWidget {
       onPressed: onPressed,
       child: Text(
         label,
-        style: TextStyle(fontFamily: 'Manrope', 
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          color: color ?? AppColors.text3,
-        ),
+        style: AppTypography.label.copyWith(fontSize: 15, color: color ?? AppColors.text3),
       ),
     );
   }

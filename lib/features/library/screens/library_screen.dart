@@ -130,13 +130,8 @@ class _LibraryContentState extends State<_LibraryContent> {
     var list = widget.books.where((b) =>
       _query.isEmpty || b.title.toLowerCase().contains(_query),
     ).toList();
-    switch (_sort) {
-      case _SortMode.az:
-        list.sort((a, b) => a.title.compareTo(b.title));
-      case _SortMode.volume:
-        list.sort((a, b) => b.chapters.compareTo(a.chapters));
-      case _SortMode.recent:
-        break;
+    if (_sort == _SortMode.az) {
+      list.sort((a, b) => a.title.compareTo(b.title));
     }
     return list;
   }
@@ -171,10 +166,7 @@ class _LibraryContentState extends State<_LibraryContent> {
                           const SizedBox(height: 5),
                           Text(
                             '${widget.books.length} книги · $_totalChapters розділів',
-                            style: TextStyle(fontFamily: 'Manrope', 
-                              fontSize: 13.5,
-                              color: AppColors.text3,
-                            ),
+                            style: AppTypography.hint.copyWith(fontSize: 13.5),
                           ),
                         ],
                       ),
@@ -200,9 +192,6 @@ class _LibraryContentState extends State<_LibraryContent> {
                       const SizedBox(width: 8),
                       _SortChip(label: AppTexts.sortAz, active: _sort == _SortMode.az,
                           onTap: () => setState(() => _sort = _SortMode.az)),
-                      const SizedBox(width: 8),
-                      _SortChip(label: AppTexts.sortVolume, active: _sort == _SortMode.volume,
-                          onTap: () => setState(() => _sort = _SortMode.volume)),
                     ],
                   ),
                 ),
@@ -227,12 +216,12 @@ class _LibraryContentState extends State<_LibraryContent> {
                   const Icon(Icons.cloud_off_rounded, color: AppColors.text3, size: 48),
                   const SizedBox(height: 16),
                   Text(AppTexts.loadError,
-                      style: TextStyle(fontFamily: 'Manrope', color: AppColors.text2, fontSize: 15)),
+                      style: AppTypography.body.copyWith(fontSize: 15, color: AppColors.text2)),
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: widget.onRefresh,
                     child: Text(AppTexts.retry,
-                        style: TextStyle(fontFamily: 'Manrope', color: AppColors.gold)),
+                        style: AppTypography.body.copyWith(color: AppColors.gold)),
                   ),
                 ],
               ),
@@ -249,13 +238,13 @@ class _LibraryContentState extends State<_LibraryContent> {
                   const SizedBox(height: 16),
                   Text(
                     _query.isEmpty ? AppTexts.libraryEmpty : AppTexts.nothingFound,
-                    style: TextStyle(fontFamily: 'Manrope', color: AppColors.text2, fontSize: 15),
+                    style: AppTypography.body.copyWith(fontSize: 15, color: AppColors.text2),
                   ),
                   if (_query.isEmpty) ...[
                     const SizedBox(height: 8),
                     Text(
                       AppTexts.libraryEmptyHint,
-                      style: TextStyle(fontFamily: 'Manrope', color: AppColors.text3, fontSize: 13),
+                      style: AppTypography.hint.copyWith(fontSize: 13),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -290,7 +279,7 @@ class _LibraryContentState extends State<_LibraryContent> {
   }
 }
 
-enum _SortMode { recent, az, volume }
+enum _SortMode { recent, az }
 
 class _SearchField extends StatelessWidget {
   const _SearchField({required this.controller});
@@ -306,10 +295,10 @@ class _SearchField extends StatelessWidget {
       ),
       child: TextField(
         controller: controller,
-        style: TextStyle(fontFamily: 'Manrope', fontSize: 15, color: AppColors.text),
+        style: AppTypography.body.copyWith(fontSize: 15),
         decoration: InputDecoration(
           hintText: AppTexts.searchHint,
-          hintStyle: TextStyle(fontFamily: 'Manrope', fontSize: 15, color: AppColors.text3),
+          hintStyle: AppTypography.body.copyWith(fontSize: 15, color: AppColors.text3),
           prefixIcon: const Icon(Icons.search_rounded, color: AppColors.text3, size: 20),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
@@ -343,9 +332,8 @@ class _SortChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(fontFamily: 'Manrope', 
+          style: AppTypography.meta.copyWith(
             fontSize: 12.5,
-            fontWeight: FontWeight.w600,
             color: active ? AppColors.gold : AppColors.text3,
           ),
         ),
@@ -606,20 +594,12 @@ class _FileChipState extends State<_FileChip> {
               Expanded(
                 child: Text(
                   widget.file.label,
-                  style: TextStyle(fontFamily: 'Manrope', 
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.text,
-                  ),
+                  style: AppTypography.label.copyWith(fontSize: 14, color: AppColors.text),
                 ),
               ),
               Text(
                 '${widget.file.sizeKb} КБ',
-                style: TextStyle(fontFamily: 'Manrope', 
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.text3,
-                ),
+                style: AppTypography.meta.copyWith(fontSize: 12.5),
               ),
             ],
           ),
@@ -680,17 +660,13 @@ class _DeleteDialog extends StatelessWidget {
               const SizedBox(height: 20),
               Text(
                 AppTexts.deleteTitle,
-                style: TextStyle(fontFamily: 'Lora',
-                  fontSize: 21,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.text,
-                ),
+                style: AppTypography.serifH2.copyWith(fontSize: 21),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
                 'Книга «${book.title}» та всі завантажені томи будуть видалені.',
-                style: TextStyle(fontFamily: 'Manrope', fontSize: 14, color: AppColors.text3, height: 1.5),
+                style: AppTypography.body.copyWith(fontSize: 14, color: AppColors.text3, height: 1.5),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 28),
@@ -707,8 +683,7 @@ class _DeleteDialog extends StatelessWidget {
                       ),
                       onPressed: () => Navigator.pop(context, false),
                       child: Text(AppTexts.cancel,
-                          style: TextStyle(fontFamily: 'Manrope',
-                              fontSize: 15, fontWeight: FontWeight.w600)),
+                          style: AppTypography.label.copyWith(fontSize: 15)),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -726,8 +701,7 @@ class _DeleteDialog extends StatelessWidget {
                       ),
                       onPressed: () => Navigator.pop(context, true),
                       child: Text(AppTexts.deleteConfirm,
-                          style: TextStyle(fontFamily: 'Manrope',
-                              fontSize: 15, fontWeight: FontWeight.w700)),
+                          style: AppTypography.label.copyWith(fontSize: 15, fontWeight: FontWeight.w700)),
                     ),
                   ),
                 ],

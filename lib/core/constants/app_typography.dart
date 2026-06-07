@@ -57,9 +57,23 @@ abstract final class AppTypography {
         color: AppColors.inkBtn,
       );
 
-  static TextStyle get tabLabel => TextStyle(fontFamily: 'Manrope', 
+  static TextStyle get tabLabel => TextStyle(fontFamily: 'Manrope',
         fontSize: 11.5,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.01 * 11.5,
+      );
+
+  static TextStyle get code => const TextStyle(
+        fontFamily: 'monospace',
+        fontSize: 12,
+        color: AppColors.text2,
+      );
+
+  static TextStyle get splashLogo => const TextStyle(
+        fontFamily: 'Lora',
+        fontSize: 38,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.16 * 38,
+        color: Colors.white,
       );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants/app_colors.dart';
+import '../constants/app_typography.dart';
 
 abstract final class AppTheme {
   static ThemeData get dark {
@@ -20,15 +21,11 @@ abstract final class AppTheme {
         scrolledUnderElevation: 0,
         systemOverlayStyle: SystemUiOverlayStyle.light,
         iconTheme: const IconThemeData(color: AppColors.gold),
-        titleTextStyle: TextStyle(fontFamily: 'Lora', 
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: AppColors.text,
-        ),
+        titleTextStyle: AppTypography.serifH2.copyWith(fontSize: 20),
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.surface2,
-        contentTextStyle: TextStyle(fontFamily: 'Manrope', color: AppColors.text),
+        contentTextStyle: AppTypography.body,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         behavior: SnackBarBehavior.floating,
       ),

@@ -214,6 +214,7 @@ class _FormViewState extends State<_FormView> {
                   ),
                   const SizedBox(height: 16),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: _Field(
@@ -316,18 +317,14 @@ class _PatternPreview extends StatelessWidget {
           Expanded(
             child: Text.rich(
               TextSpan(
-                style: const TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 12,
-                  color: AppColors.text2,
-                ),
+                style: AppTypography.code,
                 children: [
                   for (var i = 0; i < parts.length; i++) ...[
                     TextSpan(text: parts[i]),
                     if (i < parts.length - 1)
-                      const TextSpan(
+                      TextSpan(
                         text: '{n}',
-                        style: TextStyle(
+                        style: AppTypography.code.copyWith(
                           color: AppColors.goldBright,
                           fontWeight: FontWeight.w700,
                         ),
@@ -379,7 +376,7 @@ class _SegOpt extends StatelessWidget {
           children: [
             Text(
               topLabel,
-              style: TextStyle(fontFamily: 'Manrope', 
+              style: AppTypography.label.copyWith(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: active ? AppColors.inkBtn : AppColors.text3,
@@ -391,9 +388,8 @@ class _SegOpt extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               subLabel,
-              style: TextStyle(fontFamily: 'Manrope', 
+              style: AppTypography.meta.copyWith(
                 fontSize: 10.5,
-                fontWeight: FontWeight.w600,
                 color: active ? AppColors.segActiveText : AppColors.text3,
               ),
               textAlign: TextAlign.center,
@@ -514,7 +510,7 @@ class _StatusView extends StatelessWidget {
             width: 280,
             child: Text(
               subtitle,
-              style: TextStyle(fontFamily: 'Manrope', fontSize: 14.5, color: AppColors.text3, height: 1.5),
+              style: AppTypography.body.copyWith(fontSize: 14.5, color: AppColors.text3, height: 1.5),
               textAlign: TextAlign.center,
             ),
           ),
@@ -535,14 +531,6 @@ class _WakingView extends StatefulWidget {
 }
 
 class _WakingViewState extends State<_WakingView> {
-  static const _stages = [
-    ('Будимо сервер…', 'Render засинає після 15 хв без активності — перша відповідь триває довше'),
-    ('Зачекай трохи…', 'Зазвичай займає 15–30 секунд'),
-    ('Він вже прокидається…', 'Безкоштовний план — потрібно трохи терпіння 😴'),
-    ('Майже готово…', 'Сервер стартує, ось-ось відповість'),
-    ('Ще мить…', 'Дякуємо за терпіння!'),
-  ];
-
   int _elapsed = 0;
   Timer? _timer;
 
@@ -556,7 +544,8 @@ class _WakingViewState extends State<_WakingView> {
   @override
   void dispose() { _timer?.cancel(); super.dispose(); }
 
-  (String, String) get _stage => _stages[(_elapsed ~/ 7).clamp(0, _stages.length - 1)];
+  (String, String) get _stage =>
+      AppTexts.wakingStages[(_elapsed ~/ 7).clamp(0, AppTexts.wakingStages.length - 1)];
 
   @override
   Widget build(BuildContext context) {
@@ -566,7 +555,7 @@ class _WakingViewState extends State<_WakingView> {
       title: title,
       subtitle: subtitle,
       extra: Text('$_elapsed с',
-          style: TextStyle(fontFamily: 'Manrope', fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.goldDeep)),
+          style: AppTypography.meta.copyWith(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.goldDeep)),
       actions: [
         TextButton(
           onPressed: () => context.read<ConverterCubit>().cancel(),
